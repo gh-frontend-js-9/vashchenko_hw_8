@@ -1,83 +1,65 @@
 $(document).ready(function() {
-
   let baseFood = 100;
   let baseHappy = 100;
   let baseWash = 100;
-
-  // let easy = 3;
-  // let hard = 5;
-
+  let maxStatTamagotchi = 100;
   let time = 0;
   let difficulty = 3;
-  let counter = setInterval(timer, 500);
-
+  let counter;
   let tamagotchi = {
-    'feed': baseFood,
-    'run': baseHappy,
-    'wash': baseWash,
+    feed: baseFood,
+    run: baseHappy,
+    wash: baseWash,
     isDead: function() {
-      if ((this.feed <= -1) || (this.wash <= -1) || (this.run <= -1)) {
+      if ((this.feed <=  -1) || (this.wash <= -1) || (this.run <= -1)) {
         return true;
       } else {
         return false;
       }
     }
   };
-  document.getElementById('leaves_js').addEventListener('click', closeWindow);
 
-  // document.getElementById('easyLevel_js').addEventListener('click', gameStart(easy));
-  // document.getElementById('hardLevel_js').addEventListener('click', gameStart(hard));
+   $('#hardLevel_js').click(function() {
+       $('#feedMeter').attr({max : 70});
+       $('#washMeter').attr({max : 70});
+       $('#runMeter').attr({max : 70});
+       tamagotchi.feed = 40 + (Math.random() * 100 - 30);
+       tamagotchi.run = 40 + (Math.random() * 100 - 30);
+       tamagotchi.wash = 40 + (Math.random() * 100 - 30);
+       counter = setInterval(timer, 300);
+   });
 
-  document.getElementById('kill_js').addEventListener('click', killer);
-  document.getElementById('feed_js').addEventListener('click', feeding);
-  document.getElementById('wash_js').addEventListener('click', wash);
-  document.getElementById('run_js').addEventListener('click', run);
+   $('#easyLevel_js').click(function() {
+       tamagotchi.feed = Math.random() * 100 + 50;
+       tamagotchi.run = Math.random() * 100 + 50;
+       tamagotchi.wash = Math.random() * 100 + 50;
+       counter = setInterval(timer, 500);
+   });
 
-  // function gameStart(level) {
-  //   if (level === 5) {
-  //     document.getElementById('feedMeter').max = 70;
-  //     document.getElementById('washMeter').max = 70;
-  //     document.getElementById('runMeter').max = 70;
-  //     baseFood = 40 + (Math.random() * 100 - 30);
-  //     baseHappy = 40 + (Math.random() * 100 - 30);
-  //     baseWash = 40 + (Math.random() * 100 - 30);
-  //
-  //     // counter = setInterval(timer, 500);
-  //   }
-  //
-  //   if (level === 3) {
-  //     document.getElementById('feedMeter').max = 100;
-  //     document.getElementById('washMeter').max = 100;
-  //     document.getElementById('runMeter').max = 100;
-  //     baseFood = Math.random() * 100 + 50;
-  //     baseHappy = Math.random() * 100 + 50;
-  //     baseWash = Math.random() * 100 + 50;
-  //
-  //     // counter = setInterval(timer, 500);
-  //   }
-  //
-  //   return difficulty = level;
-  // }
-
+  $('#feed_js').click(feeding);
   function feeding () {
-    tamagotchi.feed += 30;
-    tamagotchi.wash += -20;
+    tamagotchi.feed = tamagotchi.feed + 30;
+    tamagotchi.wash = tamagotchi.wash - 20;
   }
 
+  $('#wash_js').click(wash);
   function wash () {
-    tamagotchi.wash += 40;
-    tamagotchi.run += -20;
+    tamagotchi.wash = tamagotchi.wash + 40;
+    tamagotchi.run = tamagotchi.run - 20;
   }
 
+  $('#run_js').click(run);
   function run () {
-    tamagotchi.run += 15;
-    tamagotchi.feed += -10;
+    tamagotchi.run = tamagotchi.run + 15;
+    tamagotchi.feed = tamagotchi.feed - 10;
   }
 
+  $('#leaves_js').click(closeWindow);
   function closeWindow() {
     window.close();
   }
 
+  $('#kill_js').click(killer);
   function killer() {
     tamagotchi.feed += -1000;
     tamagotchi.wash += -1000;
@@ -85,9 +67,9 @@ $(document).ready(function() {
   }
 
   function gameOver () {
-    document.getElementById('gameStart_js').style.display = 'none';
-    document.getElementById('gameOver_js').style.display = 'block';
-    document.getElementById('scream_js').play();
+    $('#gameStart_js').hide();
+    $('#gameOver_js').show();
+    $('#scream_js').get(0).play();
   }
 
   function timer() {
@@ -97,36 +79,36 @@ $(document).ready(function() {
     tamagotchi.wash -= difficulty;
     time += .500;
 
-    if (tamagotchi.isDead() === true) {
+    if (tamagotchi.isDead()) {
       gameOver ();
       clearInterval(counter);
-      document.getElementById('gameOverTime_js').innerText = `${time} seconds`;
-      document.getElementById('restart_js').addEventListener('click', restart);
+      $('#gameOverTime_js').append(`${time} seconds`);
+      $('#restart_js').click(restart);
 
       function restart () {
         location.reload()
       }
     }
 
-    if (tamagotchi.feed > 100) {
-      tamagotchi.feed = 100;
+    if (tamagotchi.feed > maxStatTamagotchi) {
+      tamagotchi.feed = maxStatTamagotchi;
     }
 
-    if (tamagotchi.run > 100) {
-      tamagotchi.run = 100;
+    if (tamagotchi.run > maxStatTamagotchi) {
+      tamagotchi.run = maxStatTamagotchi;
     }
 
-    if (tamagotchi.wash > 100) {
-      tamagotchi.wash = 100;
+    if (tamagotchi.wash > maxStatTamagotchi) {
+      tamagotchi.wash = maxStatTamagotchi;
     }
 
     $('.game-start__meter--food').empty(0).append(tamagotchi.feed.toFixed(0));
-    document.getElementById('feedMeter').value = tamagotchi.feed;
+    $('#feedMeter').val(tamagotchi.feed);
 
     $('.game-start__meter--wash').empty(0).append(tamagotchi.wash.toFixed(0));
-    document.getElementById('washMeter').value = tamagotchi.wash;
+    $('#washMeter').val(tamagotchi.wash);
 
     $('.game-start__meter--run').empty(0).append(tamagotchi.run.toFixed(0));
-    document.getElementById('runMeter').value = tamagotchi.run;
+    $('#runMeter').val(tamagotchi.run);
   }
 });
